@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { SignIn } from "@/components/signIn";
+import Image from "next/image";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -36,7 +37,17 @@ export default function ProfileForm() {
   }
 
   return (
-    <div className="flex justify-center items-center flex-col w-[400px]">
+    <div className="flex justify-center items-center flex-col w-[500px] bg-white p-5 rounded-lg shadow-md">
+      <Image
+        src={"/trustwing.webp"}
+        width={150}
+        height={150}
+        alt="Logo"
+        className=""
+      />
+      <div className="lobster-font text-[25px] text-blue-500 tracking-[3px] font-bold pb-[40px]">
+        EliCMS
+      </div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -66,12 +77,15 @@ export default function ProfileForm() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full bg-blue-500">
+          <Button
+            type="submit"
+            className="w-full bg-blue-500 text-[16px] font-bold"
+          >
             Login
           </Button>
         </form>
       </Form>
-      <div>or</div>
+      <div className="text-[14px] py-[20px]">or</div>
       <div className="flex flex-col w-full">
         <SignIn />
       </div>
