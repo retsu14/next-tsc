@@ -1,4 +1,5 @@
-import { signIn, signOut, auth } from "@/auth";
+"use client";
+import { signOut, useSession } from "next-auth/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,20 +11,27 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useUserStore } from "@/store/useUserStore";
 
-export default async function Navbar() {
-  const session = await auth();
+export default function Navbar() {
+  const { email, name, clearUser } = useUserStore();
+  const { data: session } = useSession();
+
+  const handleLogout = () => {
+    if (email) clearUser();
+    else signOut();
+  };
   return (
     <nav className="h-[60px] flex justify-between items-center">
       <div className="lobster-font text-[25px] text-blue-600 tracking-[3px] font-bold">
         EliCMS
       </div>
 
-      {session && session?.user ? (
+      {(session && session?.user) || email ? (
         <DropdownMenu>
           <DropdownMenuTrigger className="outline-none">
             <Image
-              src={session?.user?.image}
+              src={session?.user?.image || "/trustwing.webp"}
               width={40}
               height={40}
               alt="Github Profile"
@@ -31,50 +39,17 @@ export default async function Navbar() {
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="outline-none mr-[10px]">
-            <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              {session?.user?.name} {name}
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <div>
-                {session && session?.user && (
-                  <form
-                    action={async () => {
-                      "use server";
-                      await signOut();
-                    }}
-                  >
-                    <button type="submit">Sign out</button>
-                  </form>
-                )}
-              </div>
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <form
-          action={async () => {
-            "use server";
-            await signIn("github");
-          }}
-        >
-          <Button type="submit">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-github"
-            >
-              <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-              <path d="M9 18c-4.51 2-5-2-7-2" />
-            </svg>
-            Login
-          </Button>
-        </form>
+        <Link href={"/login"}>
+          <Button>Login</Button>
+        </Link>
       )}
     </nav>
   );

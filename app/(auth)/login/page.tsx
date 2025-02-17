@@ -13,10 +13,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { SignIn } from "@/components/signIn";
 import Image from "next/image";
+import axios from "../../../axios";
+import { useRouter } from "next/navigation";
+import { useUserStore } from "@/store/useUserStore";
+import { useState, useEffect } from "react";
+import Spinner from "@/components/ui/spinner";
 
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  email: z.string().min(2, {
+    message: "Please enter a valid email.",
   }),
   password: z.string().min(6, {
     message: "Password must be at least 6 characters.",
@@ -24,16 +29,45 @@ const formSchema = z.object({
 });
 
 export default function ProfileForm() {
+  const [loading, setLoading] = useState(false);
+  const { setUser, email } = useUserStore();
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  useEffect(() => {
+    if (!email) router.push("/login");
+    else router.push("/");
+  }, [email, router]);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
+    try {
+      const response = await axios.post("/api/auth/login", {
+        email: values.email,
+        password: values.password,
+      });
+
+      console.log("response", response);
+      if (response.status === 200) {
+        const { email, name } = response.data;
+        setUser(email, name);
+        router.push("/");
+      }
+    } catch (error: any) {
+      if (error.response) {
+        console.log("Error:", error.response.data.message);
+      } else {
+        console.log("Error:", error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -55,7 +89,7 @@ export default function ProfileForm() {
         >
           <FormField
             control={form.control}
-            name="username"
+            name="email"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
@@ -81,11 +115,21 @@ export default function ProfileForm() {
             type="submit"
             className="w-full bg-blue-500 text-[16px] font-bold"
           >
-            Login
+            {loading ? (
+              <div className="flex items-center gap-[5px]">
+                <Spinner /> Logging In
+              </div>
+            ) : (
+              "Login"
+            )}
           </Button>
         </form>
       </Form>
-      <div className="text-[14px] py-[20px]">or</div>
+      <div className="py-[20px] text-sm flex items-center w-full">
+        <div className="flex-grow border-ts border-gray-300" />
+        <span className="mx-2">OR</span>
+        <div className="flex-grow border-t border-gray-300" />
+      </div>
       <div className="flex flex-col w-full">
         <SignIn />
       </div>
