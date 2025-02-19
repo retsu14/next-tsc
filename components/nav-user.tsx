@@ -1,7 +1,6 @@
 "use client";
 
 import { BadgeCheck, ChevronsUpDown, LogOut } from "lucide-react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -17,17 +16,16 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import Logout from "@/components/logout";
 
 export function NavUser({
   user,
-  clearUser,
 }: {
   user: {
     name: string;
     email: string;
     avatar: string;
   };
-  clearUser: () => void;
 }) {
   const { isMobile } = useSidebar();
 
@@ -76,9 +74,9 @@ export function NavUser({
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={clearUser}>
+            <DropdownMenuItem>
               <LogOut />
-              Log out
+              <Logout />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

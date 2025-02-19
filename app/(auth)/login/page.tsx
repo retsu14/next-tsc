@@ -16,7 +16,7 @@ import Image from "next/image";
 import axios from "../../../axios";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Spinner from "@/components/ui/spinner";
 
 const formSchema = z.object({
@@ -30,7 +30,7 @@ const formSchema = z.object({
 
 export default function ProfileForm() {
   const [loading, setLoading] = useState(false);
-  const { setUser, email } = useUserStore();
+  const { setUser } = useUserStore();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -40,11 +40,6 @@ export default function ProfileForm() {
     },
   });
 
-  useEffect(() => {
-    if (!email) router.push("/login");
-    else router.push("/");
-  }, [email, router]);
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     try {
@@ -53,11 +48,9 @@ export default function ProfileForm() {
         password: values.password,
       });
 
-      console.log("response", response);
       if (response.status === 200) {
         const { email, name } = response.data;
         setUser(email, name);
-        router.push("/");
       }
     } catch (error: any) {
       if (error.response) {
@@ -67,6 +60,7 @@ export default function ProfileForm() {
       }
     } finally {
       setLoading(false);
+      window.location.reload();
     }
   }
 
@@ -126,7 +120,7 @@ export default function ProfileForm() {
         </form>
       </Form>
       <div className="py-[20px] text-sm flex items-center w-full">
-        <div className="flex-grow border-ts border-gray-300" />
+        <div className="flex-grow border-t border-gray-300" />
         <span className="mx-2">OR</span>
         <div className="flex-grow border-t border-gray-300" />
       </div>

@@ -44,7 +44,7 @@ export const navMain = [
     isActive: true,
     icon: FileText,
     items: [
-      { title: "Blueprint", url: "#", icons: Sheet },
+      { title: "Blueprint", url: "/blueprint", icons: Sheet },
       { title: "Blocks", url: "#", icons: LayoutTemplate },
       { title: "Contents", url: "#", icons: Layers },
       { title: "Forms", url: "#", icons: ReceiptText },
