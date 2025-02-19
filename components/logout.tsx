@@ -1,10 +1,8 @@
-import { useRouter } from "next/navigation";
 import axios from "@/axios";
 import { signOut } from "next-auth/react";
 import { useUserStore } from "@/store/useUserStore";
 
 export default function Logout() {
-  const router = useRouter();
   const { email, clearUser } = useUserStore();
 
   const handleLogout = () => {
