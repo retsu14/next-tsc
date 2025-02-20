@@ -1,3 +1,3 @@
 export default function Blueprint() {
-  return <div>E</div>;
+  return <div className="text-2xl uppercase font-bold">Blueprint</div>;
 }

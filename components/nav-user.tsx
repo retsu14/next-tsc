@@ -72,7 +72,6 @@ export function NavUser({
               <BadgeCheck />
               Account
             </DropdownMenuItem>
-
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <LogOut />

@@ -93,7 +93,7 @@ const isMember = async (req: Request) => {
   // }
 
   if (decodedToken && req.url.includes("/login")) {
-    url.pathname = "/home"; // Redirect authenticated user to the dashboard
+    url.pathname = "/"; // Redirect authenticated user to the dashboard
     return NextResponse.redirect(url);
   }
 
@@ -170,5 +170,5 @@ export async function middleware(req: Request) {
 }
 
 export const config = {
-  matcher: ["/home", "/login", "/register", "/blueprint"],
+  matcher: ["/", "/home", "/login", "/register", "/blueprint"],
 };

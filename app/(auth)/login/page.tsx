@@ -14,10 +14,11 @@ import { Input } from "@/components/ui/input";
 import { SignIn } from "@/components/signIn";
 import Image from "next/image";
 import axios from "../../../axios";
-import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
 import { useState } from "react";
 import Spinner from "@/components/ui/spinner";
+import { useToast } from "@/hooks/use-toast";
+import { revalidatePath } from "next/cache";
 
 const formSchema = z.object({
   email: z.string().min(2, {
@@ -29,9 +30,9 @@ const formSchema = z.object({
 });
 
 export default function ProfileForm() {
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const { setUser } = useUserStore();
-  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,18 +50,24 @@ export default function ProfileForm() {
       });
 
       if (response.status === 200) {
-        const { email, name } = response.data;
+        const { email, name, message } = response.data;
         setUser(email, name);
+        toast({
+          title: message,
+        });
       }
+      window.location.reload();
     } catch (error: any) {
       if (error.response) {
-        console.log("Error:", error.response.data.message);
+        toast({
+          title: error.response.data.message,
+          variant: "destructive",
+        });
       } else {
         console.log("Error:", error.message);
       }
     } finally {
       setLoading(false);
-      window.location.reload();
     }
   }
 
