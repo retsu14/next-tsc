@@ -18,7 +18,6 @@ import { useUserStore } from "@/store/useUserStore";
 import { useState } from "react";
 import Spinner from "@/components/ui/spinner";
 import { useToast } from "@/hooks/use-toast";
-import { revalidatePath } from "next/cache";
 
 const formSchema = z.object({
   email: z.string().min(2, {
@@ -49,9 +48,11 @@ export default function ProfileForm() {
         password: values.password,
       });
 
+      console.log("response", response);
+
       if (response.status === 200) {
-        const { email, name, message } = response.data;
-        setUser(email, name);
+        const { avatar, email, name, message } = response.data;
+        setUser(avatar, email, name);
         toast({
           title: message,
         });
@@ -114,7 +115,8 @@ export default function ProfileForm() {
           />
           <Button
             type="submit"
-            className="w-full bg-blue-500 text-[16px] font-bold"
+            className="w-full bg-blue-500 text-[16px] font-bold hover:bg-blue-400"
+            disabled={loading}
           >
             {loading ? (
               <div className="flex items-center gap-[5px]">

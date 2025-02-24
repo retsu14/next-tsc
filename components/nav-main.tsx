@@ -19,6 +19,7 @@ import Link from "next/link";
 
 export function NavMain({
   items,
+  dashboard,
 }: {
   items: {
     title: string;
@@ -31,10 +32,26 @@ export function NavMain({
       icons?: LucideIcon;
     }[];
   }[];
+  dashboard: {
+    title: string;
+    url: string;
+    icon: LucideIcon;
+    isActive: boolean;
+  };
 }) {
   return (
     <SidebarGroup>
       <SidebarMenu>
+        {
+          <SidebarMenuItem>
+            <Link href={dashboard.url}>
+              <SidebarMenuButton>
+                {dashboard.icon && <dashboard.icon />}
+                <span>{dashboard.title}</span>
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+        }
         {items.map((item) => (
           <Collapsible
             key={item.title}

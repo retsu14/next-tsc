@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   User,
   Activity,
+  House,
 } from "lucide-react";
 
 export const teams = [
@@ -37,10 +38,17 @@ export const teams = [
   },
 ];
 
+export const dashboard = {
+  title: "Dashboard",
+  url: "/",
+  icon: House,
+  isActive: true,
+};
+
 export const navMain = [
   {
     title: "CMS",
-    url: "#",
+    url: "/componentsblueprint",
     isActive: true,
     icon: FileText,
     items: [

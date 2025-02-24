@@ -17,8 +17,9 @@ const decodeToken = async (
 
     const { payload } = await jwtVerify(token, secretKey);
     return payload as DecodedToken; // Explicitly type the payload as DecodedToken
-  } catch (err) {
+  } catch (error: any) {
     return null; // Invalid token or decoding error
+    console.log(error);
   }
 };
 
