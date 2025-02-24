@@ -16,12 +16,15 @@ interface CreateBlueprintBody {
   data: object;
 }
 
-console.log("process.env.API_URL", process.env.API_URL);
+// console.log(
+//   "process.env.API_URL",
+//   process.env.NEXT_PUBLIC_API_URL + "/blueprint"
+// );
 
 export const blueprintApi = createApi({
   reducerPath: "blueprintApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `http://localhost:5000/api/blueprints`,
+    baseUrl: process.env.NEXT_PUBLIC_API_URL + "/blueprints",
     credentials: "include",
   }),
   tagTypes: ["Blueprint"],
