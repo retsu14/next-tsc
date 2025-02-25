@@ -28,6 +28,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "components/signIn.tsx"
-  ],
+, "public/icons/icons.js"  ],
   "exclude": ["node_modules"]
 }

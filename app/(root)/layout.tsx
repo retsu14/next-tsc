@@ -24,7 +24,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <SessionProvider>
         <SidebarProvider>
           <AppSidebar />
-          <main>
+          <main className="w-full">
             <div className="block md:hidden">
               <SidebarTrigger />
             </div>
