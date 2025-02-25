@@ -11,7 +11,7 @@ import {
   PaginationState,
   getPaginationRowModel,
 } from "@tanstack/react-table";
-import { Sort } from "@/public/icons/icons";
+import { Sort, Search, Previous, Next } from "@/public/icons/icons";
 
 const BlueprintTable = () => {
   const { data: blueprints } = useGetBlueprintsQuery();
@@ -41,27 +41,14 @@ const BlueprintTable = () => {
       <div className="p-4 border-b w-[300px]">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <svg
-              className="w-4 h-4 text-gray-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              ></path>
-            </svg>
+            <Search className="w-5 h-5 text-gray-400" />
           </div>
           <input
             type="text"
             placeholder="Search blueprints..."
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
+            className="bg-gray-50 border border-gray-300 -900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
           />
         </div>
       </div>
@@ -75,7 +62,7 @@ const BlueprintTable = () => {
                   <th
                     key={header.id}
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium -500 uppercase tracking-wider"
                   >
                     <div className="flex items-center gap-2">
                       {header.isPlaceholder
@@ -87,7 +74,7 @@ const BlueprintTable = () => {
                       {header.column.getCanSort() && (
                         <div
                           onMouseDown={header.column.getToggleSortingHandler()}
-                          className="cursor-pointer text-gray-400 hover:text-gray-600"
+                          className="cursor-pointer -400 hover:-600"
                         >
                           <Sort className="w-[15px] h-[15px]" />
                         </div>
@@ -105,7 +92,7 @@ const BlueprintTable = () => {
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
-                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                      className="px-6 py-4 whitespace-nowrap text-sm -500"
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
@@ -119,7 +106,7 @@ const BlueprintTable = () => {
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-6 py-4 text-center text-sm text-gray-500"
+                  className="px-6 py-4 text-center text-sm -500"
                 >
                   No blueprints found
                 </td>
@@ -136,8 +123,8 @@ const BlueprintTable = () => {
             disabled={!table.getCanPreviousPage()}
             className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${
               !table.getCanPreviousPage()
-                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                : "bg-white text-gray-700 hover:bg-gray-50"
+                ? "bg-gray-100 -400 cursor-not-allowed"
+                : "bg-white -700 hover:bg-gray-50"
             }`}
           >
             Previous
@@ -147,8 +134,8 @@ const BlueprintTable = () => {
             disabled={!table.getCanNextPage()}
             className={`ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${
               !table.getCanNextPage()
-                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                : "bg-white text-gray-700 hover:bg-gray-50"
+                ? "bg-gray-100 -400 cursor-not-allowed"
+                : "bg-white -700 hover:bg-gray-50"
             }`}
           >
             Next
@@ -156,7 +143,7 @@ const BlueprintTable = () => {
         </div>
         <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm -700">
               Showing{" "}
               <span className="font-medium">
                 {table.getState().pagination.pageIndex * pagination.pageSize +
@@ -184,24 +171,12 @@ const BlueprintTable = () => {
                 disabled={!table.getCanPreviousPage()}
                 className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
                   !table.getCanPreviousPage()
-                    ? "text-gray-300 cursor-not-allowed"
-                    : "text-gray-500 hover:bg-gray-50"
+                    ? "-300 cursor-not-allowed"
+                    : "-500 hover:bg-gray-50"
                 }`}
               >
                 <span className="sr-only">Previous</span>
-                <svg
-                  className="h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <Previous />
               </button>
               {Array.from({ length: table.getPageCount() }, (_, i) => (
                 <button
@@ -210,7 +185,7 @@ const BlueprintTable = () => {
                   className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                     table.getState().pagination.pageIndex === i
                       ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
-                      : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+                      : "bg-white border-gray-300 -500 hover:bg-gray-50"
                   }`}
                 >
                   {i + 1}
@@ -221,24 +196,12 @@ const BlueprintTable = () => {
                 disabled={!table.getCanNextPage()}
                 className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
                   !table.getCanNextPage()
-                    ? "text-gray-300 cursor-not-allowed"
-                    : "text-gray-500 hover:bg-gray-50"
+                    ? "-300 cursor-not-allowed"
+                    : "-500 hover:bg-gray-50"
                 }`}
               >
                 <span className="sr-only">Next</span>
-                <svg
-                  className="h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <Next />
               </button>
             </nav>
           </div>
