@@ -4,7 +4,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SessionProvider } from "next-auth/react";
 import { Provider } from "react-redux";
 import { store } from "@/store/store";
-
+import { Toaster } from "@/components/ui/toaster";
 // import { useRouter } from "next/navigation";
 // import { useEffect } from "react";
 // import { useSession } from "next-auth/react";
@@ -29,6 +29,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <SidebarTrigger />
             </div>
             <div className="md:p-[20px]">{children}</div>
+            <Toaster />
           </main>
         </SidebarProvider>
       </SessionProvider>

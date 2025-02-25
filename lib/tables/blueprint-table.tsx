@@ -1,4 +1,18 @@
 import { Checkbox } from "@/components/ui/checkbox";
+import { Edit, Delete } from "@/public/icons/icons";
+import { useDeleteBlueprintMutation } from "@/services/blueprint/blueprint-slice";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 const columns = [
   {
@@ -51,26 +65,70 @@ const columns = [
   {
     accessorKey: "actions",
     header: "Actions",
-    cell: (props) => (
-      <div className="flex gap-2">
-        <button
-          onClick={() => {
-            console.log("delete", props.row.original._id);
-          }}
-          className="text-blue-500"
-        >
-          Edit
-        </button>
-        <button
-          onClick={() => {
-            console.log("delete", props.row.original._id);
-          }}
-          className="text-red-500"
-        >
-          Delete
-        </button>
-      </div>
-    ),
+    cell: (props) => {
+      const [deleteBlueprint, { isLoading }] = useDeleteBlueprintMutation();
+      const blueprintId = props.row.original._id;
+      const { toast } = useToast();
+
+      const handleDelete = async () => {
+        try {
+          const res = await deleteBlueprint(blueprintId).unwrap();
+
+          if (res) {
+            toast({
+              title: "Blueprint deleted successfully",
+            });
+          }
+        } catch (error: any) {
+          if (error.response) {
+            toast({
+              title: error.response.data.message,
+            });
+          } else {
+            console.log("Error:", error.message);
+          }
+        }
+      };
+
+      return (
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              console.log("edit", blueprintId);
+            }}
+            className="text-blue-500"
+          >
+            <Edit />
+          </button>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button className="text-red-500" disabled={isLoading}>
+                <Delete />
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Blueprint</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete this blueprint? This action
+                  cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  className="text-white bg-red-500 hover:bg-red-400"
+                >
+                  Yes, Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      );
+    },
     isResizable: true,
     enableSorting: false,
   },

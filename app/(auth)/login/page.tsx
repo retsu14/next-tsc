@@ -48,8 +48,6 @@ export default function ProfileForm() {
         password: values.password,
       });
 
-      console.log("response", response);
-
       if (response.status === 200) {
         const { avatar, email, name, message } = response.data;
         setUser(avatar, email, name);
