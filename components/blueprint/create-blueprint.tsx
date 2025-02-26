@@ -62,7 +62,7 @@ const FormBuilder: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col p-4 mx-auto space-y-6 bg-gray-50 rounded-lg">
+    <div className="flex flex-col space-y-6 rounded-lg">
       <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Name<span className="text-red-500">*</span>

@@ -58,7 +58,7 @@ export const navMain = [
       { title: "Forms", url: "#", icons: ReceiptText },
       { title: "Media", url: "#", icons: Files },
       { title: "Pages", url: "#", icons: File },
-      { title: "Sites", url: "#", icons: Globe },
+      { title: "Sites", url: "/sites", icons: Globe },
       { title: "Taxonomies", url: "#", icons: Tag },
       { title: "Globals", url: "#", icons: Earth },
     ],
