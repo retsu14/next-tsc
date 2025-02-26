@@ -76,7 +76,8 @@ const columns = [
 
           if (res) {
             toast({
-              title: "Blueprint deleted successfully",
+              title: res.message,
+              variant: "success",
             });
           }
         } catch (error: any) {

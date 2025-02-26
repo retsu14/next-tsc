@@ -22,6 +22,13 @@ interface FormStore {
   removeSection: (sectionId: number) => void;
   addField: (sectionId: number) => void;
   removeField: (sectionId: number, fieldId: number) => void;
+  updateSection: (sectionId: number, updates: Partial<Section>) => void;
+  updateField: (
+    sectionId: number,
+    fieldId: number,
+    updates: Partial<Field>
+  ) => void;
+  resetForm: () => void;
 }
 
 export const useFormStore = create<FormStore>((set) => ({
@@ -84,5 +91,44 @@ export const useFormStore = create<FormStore>((set) => ({
             }
           : section
       ),
+    })),
+  updateSection: (sectionId, updates) =>
+    set((state) => ({
+      sections: state.sections.map((section) =>
+        section.id === sectionId ? { ...section, ...updates } : section
+      ),
+    })),
+  updateField: (sectionId, fieldId, updates) =>
+    set((state) => ({
+      sections: state.sections.map((section) =>
+        section.id === sectionId
+          ? {
+              ...section,
+              fields: section.fields.map((field) =>
+                field.id === fieldId ? { ...field, ...updates } : field
+              ),
+            }
+          : section
+      ),
+    })),
+  resetForm: () =>
+    set(() => ({
+      sections: [
+        {
+          id: 1,
+          title: "",
+          stateName: "",
+          fields: [
+            {
+              id: 1,
+              title: "",
+              stateName: "",
+              rules: "",
+              helperText: "",
+              type: "",
+            },
+          ],
+        },
+      ],
     })),
 }));

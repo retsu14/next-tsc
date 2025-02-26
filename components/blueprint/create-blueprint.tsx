@@ -1,9 +1,65 @@
+import { useState } from "react";
 import TableButton from "./table-buttons";
 import { useFormStore } from "@/store/form-store";
+import { useCreateBlueprintMutation } from "@/services/blueprint/blueprint-slice";
+import { useToast } from "@/hooks/use-toast";
 
 const FormBuilder: React.FC = () => {
-  const { sections, addSection, removeSection, addField, removeField } =
-    useFormStore();
+  const {
+    sections,
+    addSection,
+    removeSection,
+    addField,
+    removeField,
+    updateField,
+    updateSection,
+    resetForm,
+  } = useFormStore();
+  const [createBlueprint, { isLoading }] = useCreateBlueprintMutation();
+  const [formTitle, setFormTitle] = useState("");
+  const { toast } = useToast();
+
+  const handleSubmit = async () => {
+    if (!formTitle) {
+      toast({
+        title: "Form title is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const formData = {
+      title: formTitle,
+      data: { sections },
+    };
+
+    try {
+      const res = await createBlueprint(formData).unwrap();
+      if (res)
+        toast({
+          title: res.message,
+          variant: "success",
+        });
+
+      setFormTitle("");
+      resetForm();
+    } catch (error: any) {
+      alert("Error creating blueprint: " + (error?.message || "Unknown error"));
+    }
+  };
+
+  const handleChange = (
+    sectionId: number | null,
+    fieldId: number | null,
+    name: string,
+    value: string
+  ) => {
+    if (sectionId !== null && fieldId === null) {
+      updateSection(sectionId, { [name]: value });
+    } else if (fieldId !== null && sectionId !== null) {
+      updateField(sectionId, fieldId, { [name]: value });
+    }
+  };
 
   return (
     <div className="flex flex-col p-4 mx-auto space-y-6 bg-gray-50 rounded-lg">
@@ -13,8 +69,10 @@ const FormBuilder: React.FC = () => {
         </label>
         <input
           type="text"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border text-sm border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="Form name"
+          value={formTitle}
+          onChange={(e) => setFormTitle(e.target.value)}
         />
       </div>
       <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
@@ -40,6 +98,10 @@ const FormBuilder: React.FC = () => {
                 <input
                   type="text"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={section.title}
+                  onChange={(e) =>
+                    handleChange(section.id, null, "title", e.target.value)
+                  }
                 />
               </div>
               <div>
@@ -49,6 +111,10 @@ const FormBuilder: React.FC = () => {
                 <input
                   type="text"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={section.stateName}
+                  onChange={(e) =>
+                    handleChange(section.id, null, "stateName", e.target.value)
+                  }
                 />
               </div>
             </div>
@@ -79,13 +145,33 @@ const FormBuilder: React.FC = () => {
                       <input
                         type="text"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        value={field.title}
+                        onChange={(e) =>
+                          handleChange(
+                            section.id,
+                            field.id,
+                            "title",
+                            e.target.value
+                          )
+                        }
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Type<span className="text-red-500">*</span>
                       </label>
-                      <select className="w-full px-3 py-[10px] border text-sm border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                      <select
+                        className="w-full px-3 py-[10px] border text-sm border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                        value={field.type}
+                        onChange={(e) =>
+                          handleChange(
+                            section.id,
+                            field.id,
+                            "type",
+                            e.target.value
+                          )
+                        }
+                      >
                         <option>Select an option</option>
                         <option>Text</option>
                         <option>Number</option>
@@ -103,6 +189,15 @@ const FormBuilder: React.FC = () => {
                     <input
                       type="text"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      value={field.stateName}
+                      onChange={(e) =>
+                        handleChange(
+                          section.id,
+                          field.id,
+                          "stateName",
+                          e.target.value
+                        )
+                      }
                     />
                   </div>
                   <div className="mb-4">
@@ -112,10 +207,19 @@ const FormBuilder: React.FC = () => {
                     <input
                       type="text"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      value={field.rules}
+                      onChange={(e) =>
+                        handleChange(
+                          section.id,
+                          field.id,
+                          "rules",
+                          e.target.value
+                        )
+                      }
                     />
                     <p className="mt-1 text-xs text-gray-500">
-                      Rules should be separated with "|". Available rules can be
-                      found on Laravel's Documentation.
+                      {`Rules should be separated with "|". Available rules can be
+                      found on Laravel's Documentation.`}
                     </p>
                   </div>
                   <div>
@@ -125,6 +229,15 @@ const FormBuilder: React.FC = () => {
                     <input
                       type="text"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      value={field.helperText}
+                      onChange={(e) =>
+                        handleChange(
+                          section.id,
+                          field.id,
+                          "helperText",
+                          e.target.value
+                        )
+                      }
                     />
                   </div>
                 </div>
@@ -145,8 +258,12 @@ const FormBuilder: React.FC = () => {
           Add to sections
         </button>
       </div>
-      <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 text-sm focus:ring-offset-2 focus:ring-blue-500 shadow-sm font-medium">
-        Create
+      <button
+        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 text-sm focus:ring-offset-2 focus:ring-blue-500 shadow-sm font-medium"
+        onClick={handleSubmit}
+        disabled={isLoading}
+      >
+        {isLoading ? "Creating..." : "Create"}
       </button>
     </div>
   );
