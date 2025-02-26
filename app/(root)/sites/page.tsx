@@ -2,11 +2,14 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Title from "@/components/title";
-import SitesTable from "@/components/sites/sites-table";
 import { Plus, X } from "lucide-react";
-// import FormBuilder from "@/components/blueprint/create-blueprint";
+import CreateSites from "@/components/sites/create-sites";
+import columns from "@/lib/tables/sites-table";
+import Table from "@/components/table";
+import { useGetSitesQuery } from "@/app/services/sites/sites-slice";
 
 export default function Blueprint() {
+  const { data: sites } = useGetSitesQuery();
   const [showForm, setShowForm] = useState(false);
 
   const toggleForm = () => {
@@ -39,9 +42,11 @@ export default function Blueprint() {
         </Button>
       </div>
       {showForm ? (
-        <div className="mt-4">{/* <FormBuilder /> */}</div>
+        <div className="mt-4">
+          <CreateSites />
+        </div>
       ) : (
-        <SitesTable />
+        <Table data={sites} columns={columns} />
       )}
     </div>
   );

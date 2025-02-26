@@ -102,7 +102,7 @@ const columns = [
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete Blueprint</AlertDialogTitle>
+                <AlertDialogTitle>Delete Site</AlertDialogTitle>
                 <AlertDialogDescription>
                   Are you sure you want to delete this blueprint? This action
                   cannot be undone.

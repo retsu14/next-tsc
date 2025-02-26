@@ -1,7 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useGetBlueprintsQuery } from "@/app/services/blueprint/blueprint-slice";
-import columns from "@/lib/tables/blueprint-table";
 import {
   useReactTable,
   getCoreRowModel,
@@ -13,8 +11,12 @@ import {
 } from "@tanstack/react-table";
 import { Sort, Search, Previous, Next } from "@/public/icons/icons";
 
-const BlueprintTable = () => {
-  const { data: blueprints } = useGetBlueprintsQuery();
+interface Props {
+  columns: any;
+  data: any;
+}
+
+const Table: React.FC<Props> = ({ columns, data }) => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -22,7 +24,7 @@ const BlueprintTable = () => {
   });
 
   const table = useReactTable({
-    data: blueprints ?? [],
+    data: data ?? [],
     columns,
     state: {
       globalFilter,
@@ -108,7 +110,7 @@ const BlueprintTable = () => {
                   colSpan={columns.length}
                   className="px-6 py-4 text-center text-sm -500"
                 >
-                  No blueprints found
+                  No data found
                 </td>
               </tr>
             )}
@@ -154,10 +156,10 @@ const BlueprintTable = () => {
                 {Math.min(
                   (table.getState().pagination.pageIndex + 1) *
                     pagination.pageSize,
-                  blueprints?.length || 0
+                  data?.length || 0
                 )}
               </span>{" "}
-              of <span className="font-medium">{blueprints?.length || 0}</span>{" "}
+              of <span className="font-medium">{data?.length || 0}</span>{" "}
               results
             </p>
           </div>
@@ -211,4 +213,4 @@ const BlueprintTable = () => {
   );
 };
 
-export default BlueprintTable;
+export default Table;

@@ -2,11 +2,15 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Title from "@/components/title";
-import BlueprintTable from "@/components/blueprint/blueprint-table";
 import { Plus, X } from "lucide-react";
 import FormBuilder from "@/components/blueprint/create-blueprint";
+import Table from "@/components/table";
+import columns from "@/lib/tables/blueprint-table";
+import { useGetBlueprintsQuery } from "@/services/blueprint/blueprint-slice";
 
 export default function Blueprint() {
+  const { data: blueprints } = useGetBlueprintsQuery();
+
   const [showForm, setShowForm] = useState(false);
 
   const toggleForm = () => {
@@ -43,7 +47,7 @@ export default function Blueprint() {
           <FormBuilder />
         </div>
       ) : (
-        <BlueprintTable />
+        <Table data={blueprints} columns={columns} />
       )}
     </div>
   );
