@@ -11,9 +11,16 @@ import { useGetSitesQuery } from "@/app/services/sites/sites-slice";
 export default function Blueprint() {
   const { data: sites } = useGetSitesQuery();
   const [showForm, setShowForm] = useState(false);
+  const [editSite, setEditSite] = useState(null);
 
   const toggleForm = () => {
     setShowForm(!showForm);
+    setEditSite(null);
+  };
+
+  const handleEdit = (site) => {
+    setEditSite(site);
+    setShowForm(true);
   };
 
   return (
@@ -43,10 +50,13 @@ export default function Blueprint() {
       </div>
       {showForm ? (
         <div className="mt-4">
-          <CreateSites />
+          <CreateSites
+            mode={editSite ? "update" : "create"}
+            initialData={editSite}
+          />
         </div>
       ) : (
-        <Table data={sites} columns={columns} />
+        <Table data={sites} columns={columns} onEdit={handleEdit} />
       )}
     </div>
   );

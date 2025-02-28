@@ -53,7 +53,7 @@ export const navMain = [
     icon: FileText,
     items: [
       { title: "Blueprint", url: "/blueprint", icons: Sheet },
-      { title: "Blocks", url: "#", icons: LayoutTemplate },
+      { title: "Blocks", url: "/block", icons: LayoutTemplate },
       { title: "Contents", url: "#", icons: Layers },
       { title: "Forms", url: "#", icons: ReceiptText },
       { title: "Media", url: "#", icons: Files },

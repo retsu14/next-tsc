@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { create } from "domain";
 
 interface Site {
   _id: string;
@@ -8,6 +7,7 @@ interface Site {
   hook: string;
   createdAt?: string;
   updatedAt?: string;
+  message: string;
   __v: number;
 }
 
@@ -44,16 +44,14 @@ export const sitesApi = createApi({
       }),
       invalidatesTags: ["Site"],
     }),
-    updatedBySite: builder.mutation<Site, { id: string; body: CreateSiteBody }>(
-      {
-        query: ({ id, body }) => ({
-          url: `/update/${id}`,
-          method: "PUT",
-          body,
-        }),
-        invalidatesTags: ["Site"],
-      }
-    ),
+    updateSite: builder.mutation<Site, { id: string; body: CreateSiteBody }>({
+      query: ({ id, body }) => ({
+        url: `/update/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Site"],
+    }),
   }),
 });
 
@@ -61,5 +59,5 @@ export const {
   useGetSitesQuery,
   useCreateSiteMutation,
   useDeleteSiteMutation,
-  useUpdatedBySiteMutation,
+  useUpdateSiteMutation,
 } = sitesApi;

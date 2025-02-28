@@ -14,18 +14,19 @@ import { Sort, Search, Previous, Next } from "@/public/icons/icons";
 interface Props {
   columns: any;
   data: any;
+  onEdit: (site: any) => void;
 }
 
-const Table: React.FC<Props> = ({ columns, data }) => {
+const Table: React.FC<Props> = ({ columns, data, onEdit }) => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 10,
   });
 
   const table = useReactTable({
     data: data ?? [],
-    columns,
+    columns: columns(onEdit),
     state: {
       globalFilter,
       pagination,
@@ -39,8 +40,8 @@ const Table: React.FC<Props> = ({ columns, data }) => {
   });
 
   return (
-    <div className="mt-5 bg-white rounded-lg shadow overflow-hidden">
-      <div className="p-4 border-b w-[300px]">
+    <div className="mt-5 bg-white rounded-lg shadow overflow-hidden ">
+      <div className="p-4 border-b flex justify-end w-full">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <Search className="w-5 h-5 text-gray-400" />
@@ -56,7 +57,7 @@ const Table: React.FC<Props> = ({ columns, data }) => {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
+        <table className="min-w-full divide-y divide-gray-200 table-fixed">
           <thead className="bg-gray-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -75,7 +76,7 @@ const Table: React.FC<Props> = ({ columns, data }) => {
                           )}
                       {header.column.getCanSort() && (
                         <div
-                          onMouseDown={header.column.getToggleSortingHandler()}
+                          onClick={header.column.getToggleSortingHandler()}
                           className="cursor-pointer -400 hover:-600"
                         >
                           <Sort className="w-[15px] h-[15px]" />
@@ -180,19 +181,32 @@ const Table: React.FC<Props> = ({ columns, data }) => {
                 <span className="sr-only">Previous</span>
                 <Previous />
               </button>
-              {Array.from({ length: table.getPageCount() }, (_, i) => (
-                <button
-                  key={i}
-                  onClick={() => table.setPageIndex(i)}
-                  className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                    table.getState().pagination.pageIndex === i
-                      ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
-                      : "bg-white border-gray-300 -500 hover:bg-gray-50"
-                  }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
+              {Array.from(
+                { length: Math.min(5, table.getPageCount()) },
+                (_, i) => {
+                  const pageIndex =
+                    Math.max(
+                      0,
+                      Math.min(
+                        table.getPageCount() - 5,
+                        table.getState().pagination.pageIndex - 2
+                      )
+                    ) + i;
+                  return (
+                    <button
+                      key={pageIndex}
+                      onClick={() => table.setPageIndex(pageIndex)}
+                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                        table.getState().pagination.pageIndex === pageIndex
+                          ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
+                          : "bg-white border-gray-300 -500 hover:bg-gray-50"
+                      }`}
+                    >
+                      {pageIndex + 1}
+                    </button>
+                  );
+                }
+              )}
               <button
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}

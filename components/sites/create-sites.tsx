@@ -1,7 +1,10 @@
-import { ChangeEvent, FormEvent } from "react";
+import { ChangeEvent, FormEvent, useEffect } from "react";
 import { Button } from "../ui/button";
 import { useStore } from "@/store/sites-form";
-import { useCreateSiteMutation } from "@/app/services/sites/sites-slice";
+import {
+  useCreateSiteMutation,
+  useUpdateSiteMutation,
+} from "@/app/services/sites/sites-slice";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 
@@ -11,7 +14,17 @@ const siteSchema = z.object({
   hook: z.string().optional(),
 });
 
-const CreateSites: React.FC = () => {
+interface CreateSitesProps {
+  mode: "create" | "update";
+  initialData?: {
+    _id: string;
+    name: string;
+    domain: string;
+    hook: string;
+  };
+}
+
+const CreateSites: React.FC<CreateSitesProps> = ({ mode, initialData }) => {
   const { toast } = useToast();
   const {
     name,
@@ -23,12 +36,20 @@ const CreateSites: React.FC = () => {
     clearError,
     resetForm,
   } = useStore();
-  const [createSite, { isLoading }] = useCreateSiteMutation();
+  const [createSite, { isLoading: isCreating }] = useCreateSiteMutation();
+  const [updateSite, { isLoading: isUpdating }] = useUpdateSiteMutation();
+
+  useEffect(() => {
+    if (mode === "update" && initialData) {
+      setField("name", initialData.name);
+      setField("domain", initialData.domain);
+      setField("hook", initialData.hook);
+    }
+  }, [mode, initialData, setField]);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setField(name, value);
-
     clearError(name);
   };
 
@@ -51,16 +72,28 @@ const CreateSites: React.FC = () => {
     }
 
     try {
-      await createSite(formData).then((res) => {
-        if (res.data) {
-          toast({
-            title: res.data.message,
-            variant: "success",
-          });
-        }
-      });
-
-      resetForm();
+      if (mode === "create") {
+        await createSite(formData).then((res) => {
+          if (res.data) {
+            toast({
+              title: res.data.message,
+              variant: "success",
+            });
+          }
+        });
+        resetForm();
+      } else if (mode === "update" && initialData) {
+        await updateSite({ id: initialData._id, body: formData }).then(
+          (res) => {
+            if (res.data) {
+              toast({
+                title: res.data.message,
+                variant: "success",
+              });
+            }
+          }
+        );
+      }
     } catch (error: any) {
       if (error.response) {
         toast({
@@ -126,9 +159,13 @@ const CreateSites: React.FC = () => {
       <Button
         type="submit"
         className="bg-blue-500 hover:bg-blue-400"
-        disabled={isLoading}
+        disabled={isCreating || isUpdating}
       >
-        {isLoading ? "Creating" : "Create"}
+        {isCreating || isUpdating
+          ? "Processing"
+          : mode === "create"
+          ? "Create"
+          : "Update"}
       </Button>
     </form>
   );

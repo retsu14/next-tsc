@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Edit, Delete } from "@/public/icons/icons";
 import { useDeleteSiteMutation } from "@/app/services/sites/sites-slice";
@@ -13,8 +14,9 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
+import CreateSites from "@/components/sites/create-sites";
 
-const columns = [
+const columns = (onEdit) => [
   {
     id: "select",
     header: ({ table }) => (
@@ -36,7 +38,7 @@ const columns = [
     ),
     enableSorting: false,
     enableHiding: false,
-    maxSize: 40,
+    maxSize: 20,
   },
   {
     accessorKey: "name",
@@ -44,6 +46,7 @@ const columns = [
     cell: (props) => <div>{props.getValue()}</div>,
     isResizable: true,
     enableSorting: true,
+    size: 700,
   },
   {
     accessorKey: "domain",
@@ -53,6 +56,7 @@ const columns = [
     ),
     isResizable: true,
     enableSorting: true,
+    size: 1000,
   },
   {
     accessorKey: "actions",
@@ -86,10 +90,8 @@ const columns = [
       return (
         <div className="flex gap-2">
           <button
-            onClick={() => {
-              console.log("edit", siteId);
-            }}
             className="text-blue-500"
+            onClick={() => onEdit(props.row.original)}
           >
             <Edit />
           </button>
@@ -104,8 +106,8 @@ const columns = [
               <AlertDialogHeader>
                 <AlertDialogTitle>Delete Site</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to delete this blueprint? This action
-                  cannot be undone.
+                  Are you sure you want to delete this site? This action cannot
+                  be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -124,6 +126,7 @@ const columns = [
     },
     isResizable: true,
     enableSorting: false,
+    size: 20,
   },
 ];
 

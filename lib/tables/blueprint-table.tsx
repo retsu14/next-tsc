@@ -36,7 +36,7 @@ const columns = [
     ),
     enableSorting: false,
     enableHiding: false,
-    maxSize: 40,
+    size: 0,
   },
   {
     accessorKey: "title",
@@ -44,6 +44,7 @@ const columns = [
     cell: (props) => <div>{props.getValue()}</div>,
     isResizable: true,
     enableSorting: true,
+    size: 700,
   },
   {
     accessorKey: "updatedAt",
@@ -59,8 +60,8 @@ const columns = [
         })}
       </div>
     ),
-    isResizable: true,
     enableSorting: true,
+    size: 1000,
   },
   {
     accessorKey: "actions",
@@ -130,8 +131,8 @@ const columns = [
         </div>
       );
     },
-    isResizable: true,
     enableSorting: false,
+    size: 20,
   },
 ];
 
