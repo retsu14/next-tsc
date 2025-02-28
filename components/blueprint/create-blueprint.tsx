@@ -1,12 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TableButton from "./table-buttons";
 import { useFormStore } from "@/store/form-store";
-import { useCreateBlueprintMutation } from "@/services/blueprint/blueprint-slice";
+import {
+  useCreateBlueprintMutation,
+  useUpdateBlueprintMutation,
+} from "@/services/blueprint/blueprint-slice";
 import { useToast } from "@/hooks/use-toast";
 
-const FormBuilder: React.FC = () => {
+interface CreateBlueprintProps {
+  mode: "create" | "update";
+  initialData?: {
+    _id: string;
+    title: string;
+    data: any;
+  };
+}
+
+const FormBuilder: React.FC<CreateBlueprintProps> = ({ mode, initialData }) => {
   const {
     sections,
+    setSections,
     addSection,
     removeSection,
     addField,
@@ -15,9 +28,19 @@ const FormBuilder: React.FC = () => {
     updateSection,
     resetForm,
   } = useFormStore();
-  const [createBlueprint, { isLoading }] = useCreateBlueprintMutation();
+  const [createBlueprint, { isLoading: isCreating }] =
+    useCreateBlueprintMutation();
+  const [updateBlueprint, { isLoading: isUpdating }] =
+    useUpdateBlueprintMutation();
   const [formTitle, setFormTitle] = useState("");
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (mode === "update" && initialData) {
+      setFormTitle(initialData.title);
+      setSections(initialData.data.sections);
+    }
+  }, [mode, initialData, setSections]);
 
   const handleSubmit = async () => {
     if (!formTitle) {
@@ -34,17 +57,39 @@ const FormBuilder: React.FC = () => {
     };
 
     try {
-      const res = await createBlueprint(formData).unwrap();
-      if (res)
-        toast({
-          title: res.message,
-          variant: "success",
-        });
-
-      setFormTitle("");
-      resetForm();
+      if (mode === "create") {
+        const res = await createBlueprint(formData).unwrap();
+        if (res) {
+          toast({
+            title: "Success",
+            description: res.message,
+            variant: "success",
+          });
+        }
+        setFormTitle("");
+        resetForm();
+      } else if (mode === "update" && initialData) {
+        const res = await updateBlueprint({
+          id: initialData._id,
+          body: formData,
+        }).unwrap();
+        console.log("res", res);
+        if (res) {
+          toast({
+            title: "Success",
+            description: res.message,
+            variant: "success",
+          });
+        }
+      }
     } catch (error: any) {
-      alert("Error creating blueprint: " + (error?.message || "Unknown error"));
+      toast({
+        title: "Error",
+        description: error?.message,
+        variant: "destructive",
+      });
+
+      console.log("error", error);
     }
   };
 
@@ -261,9 +306,13 @@ const FormBuilder: React.FC = () => {
       <button
         className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 text-sm focus:ring-offset-2 focus:ring-blue-500 shadow-sm font-medium"
         onClick={handleSubmit}
-        disabled={isLoading}
+        disabled={isCreating || isUpdating}
       >
-        {isLoading ? "Creating..." : "Create"}
+        {isCreating || isUpdating
+          ? "Processing..."
+          : mode === "create"
+          ? "Create"
+          : "Update"}
       </button>
     </div>
   );

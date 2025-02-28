@@ -72,8 +72,9 @@ const columns = (onEdit) => [
 
           if (res) {
             toast({
-              title: res.message,
-              variant: "success",
+              title: "Deleted",
+              description: res.message,
+              variant: "destructive",
             });
           }
         } catch (error: any) {

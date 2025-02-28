@@ -18,6 +18,7 @@ interface Section {
 
 interface FormStore {
   sections: Section[];
+  setSections: (sections: Section[]) => void;
   addSection: () => void;
   removeSection: (sectionId: number) => void;
   addField: (sectionId: number) => void;
@@ -49,6 +50,9 @@ export const useFormStore = create<FormStore>((set) => ({
       ],
     },
   ],
+
+  setSections: (sections) => set({ sections }),
+
   addSection: () =>
     set((state) => ({
       sections: [

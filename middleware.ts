@@ -171,5 +171,5 @@ export async function middleware(req: Request) {
 }
 
 export const config = {
-  matcher: ["/", "/home", "/login", "/register", "/blueprint"],
+  matcher: ["/", "/home", "/login", "/register", "/blueprint", "/sites"],
 };

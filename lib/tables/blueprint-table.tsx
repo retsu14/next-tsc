@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Edit, Delete } from "@/public/icons/icons";
-import { useDeleteBlueprintMutation } from "@/services/blueprint/blueprint-slice";
+import { useDeleteBlueprintMutation } from "@/app/services/blueprint/blueprint-slice";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -14,7 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 
-const columns = [
+const columns = (onEdit) => [
   {
     id: "select",
     header: ({ table }) => (
@@ -77,8 +78,9 @@ const columns = [
 
           if (res) {
             toast({
-              title: res.message,
-              variant: "success",
+              title: "Deleted",
+              description: res.message,
+              variant: "destructive",
             });
           }
         } catch (error: any) {
@@ -95,10 +97,8 @@ const columns = [
       return (
         <div className="flex gap-2">
           <button
-            onClick={() => {
-              console.log("edit", blueprintId);
-            }}
             className="text-blue-500"
+            onClick={() => onEdit(props.row.original)}
           >
             <Edit />
           </button>

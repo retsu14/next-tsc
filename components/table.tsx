@@ -14,7 +14,7 @@ import { Sort, Search, Previous, Next } from "@/public/icons/icons";
 interface Props {
   columns: any;
   data: any;
-  onEdit: (site: any) => void;
+  onEdit: (item: any) => void;
 }
 
 const Table: React.FC<Props> = ({ columns, data, onEdit }) => {
@@ -57,7 +57,7 @@ const Table: React.FC<Props> = ({ columns, data, onEdit }) => {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 table-fixed">
+        <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -107,10 +107,7 @@ const Table: React.FC<Props> = ({ columns, data, onEdit }) => {
               ))
             ) : (
               <tr>
-                <td
-                  colSpan={columns.length}
-                  className="px-6 py-4 text-center text-sm -500"
-                >
+                <td colSpan={100} className="px-6 py-4 text-center text-sm ">
                   No data found
                 </td>
               </tr>

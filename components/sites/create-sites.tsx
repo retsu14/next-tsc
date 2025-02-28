@@ -76,7 +76,8 @@ const CreateSites: React.FC<CreateSitesProps> = ({ mode, initialData }) => {
         await createSite(formData).then((res) => {
           if (res.data) {
             toast({
-              title: res.data.message,
+              title: "Success",
+              description: res.data.message,
               variant: "success",
             });
           }
@@ -87,7 +88,8 @@ const CreateSites: React.FC<CreateSitesProps> = ({ mode, initialData }) => {
           (res) => {
             if (res.data) {
               toast({
-                title: res.data.message,
+                title: "Success",
+                description: res.data.message,
                 variant: "success",
               });
             }

@@ -3,24 +3,32 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Title from "@/components/title";
 import { Plus, X } from "lucide-react";
-import FormBuilder from "@/components/blueprint/create-blueprint";
-import Table from "@/components/table";
+import CreateBlueprint from "@/components/blueprint/create-blueprint";
 import columns from "@/lib/tables/blueprint-table";
-import { useGetBlueprintsQuery } from "@/services/blueprint/blueprint-slice";
+import Table from "@/components/table";
+import { useGetBlueprintsQuery } from "@/app/services/blueprint/blueprint-slice";
 
-export default function Blueprint() {
+export default function BlueprintPage() {
   const { data: blueprints } = useGetBlueprintsQuery();
-
   const [showForm, setShowForm] = useState(false);
+  const [editBlueprint, setEditBlueprint] = useState(null);
 
   const toggleForm = () => {
     setShowForm(!showForm);
+    setEditBlueprint(null); 
   };
+
+  const handleEdit = (blueprint) => {
+    setEditBlueprint(blueprint);
+    setShowForm(true);
+  };
+
+  console.log("editBlueprint", editBlueprint);
 
   return (
     <div className="w-full">
       <div className="flex justify-between items-center">
-        <Title title="blueprint" />
+        <Title title="Blueprints" />
         <Button
           onClick={toggleForm}
           className={`${
@@ -44,10 +52,13 @@ export default function Blueprint() {
       </div>
       {showForm ? (
         <div className="mt-4">
-          <FormBuilder />
+          <CreateBlueprint
+            mode={editBlueprint ? "update" : "create"}
+            initialData={editBlueprint}
+          />
         </div>
       ) : (
-        <Table data={blueprints} columns={columns} />
+        <Table data={blueprints} columns={columns} onEdit={handleEdit} />
       )}
     </div>
   );
