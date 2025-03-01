@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import TableButton from "./table-buttons";
 import { useFormStore } from "@/store/form-store";
 import {
   useCreateBlueprintMutation,
   useUpdateBlueprintMutation,
-} from "@/services/blueprint/blueprint-slice";
+} from "@/app/services/blueprint/blueprint-slice";
 import { useToast } from "@/hooks/use-toast";
 
 interface CreateBlueprintProps {
@@ -18,7 +18,9 @@ interface CreateBlueprintProps {
 
 const FormBuilder: React.FC<CreateBlueprintProps> = ({ mode, initialData }) => {
   const {
+    title,
     sections,
+    setTitle,
     setSections,
     addSection,
     removeSection,
@@ -32,28 +34,19 @@ const FormBuilder: React.FC<CreateBlueprintProps> = ({ mode, initialData }) => {
     useCreateBlueprintMutation();
   const [updateBlueprint, { isLoading: isUpdating }] =
     useUpdateBlueprintMutation();
-  const [formTitle, setFormTitle] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
     if (mode === "update" && initialData) {
-      setFormTitle(initialData.title);
+      setTitle(initialData.title);
       setSections(initialData.data.sections);
     }
   }, [mode, initialData, setSections]);
 
   const handleSubmit = async () => {
-    if (!formTitle) {
-      toast({
-        title: "Form title is required",
-        variant: "destructive",
-      });
-      return;
-    }
-
     const formData = {
-      title: formTitle,
-      data: { sections },
+      title: title ?? "",
+      data: { sections: sections ?? [] },
     };
 
     try {
@@ -66,7 +59,6 @@ const FormBuilder: React.FC<CreateBlueprintProps> = ({ mode, initialData }) => {
             variant: "success",
           });
         }
-        setFormTitle("");
         resetForm();
       } else if (mode === "update" && initialData) {
         const res = await updateBlueprint({
@@ -88,8 +80,6 @@ const FormBuilder: React.FC<CreateBlueprintProps> = ({ mode, initialData }) => {
         description: error?.message,
         variant: "destructive",
       });
-
-      console.log("error", error);
     }
   };
 
@@ -116,8 +106,8 @@ const FormBuilder: React.FC<CreateBlueprintProps> = ({ mode, initialData }) => {
           type="text"
           className="w-full px-3 py-2 border text-sm border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="Form name"
-          value={formTitle}
-          onChange={(e) => setFormTitle(e.target.value)}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         />
       </div>
       <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">

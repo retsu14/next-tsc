@@ -15,15 +15,13 @@ export default function BlueprintPage() {
 
   const toggleForm = () => {
     setShowForm(!showForm);
-    setEditBlueprint(null); 
+    setEditBlueprint(null);
   };
 
-  const handleEdit = (blueprint) => {
+  const handleEdit = (blueprint: any) => {
     setEditBlueprint(blueprint);
     setShowForm(true);
   };
-
-  console.log("editBlueprint", editBlueprint);
 
   return (
     <div className="w-full">

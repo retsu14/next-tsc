@@ -16,11 +16,6 @@ interface CreateBlueprintBody {
   data: object;
 }
 
-// console.log(
-//   "process.env.API_URL",
-  // process.env.NEXT_PUBLIC_API_URL + "/blueprint"
-// );
-
 export const blueprintApi = createApi({
   reducerPath: "blueprintApi",
   baseQuery: fetchBaseQuery({
@@ -50,6 +45,18 @@ export const blueprintApi = createApi({
       }),
       invalidatesTags: ["Blueprint"],
     }),
+
+    updateBlueprint: builder.mutation<
+      Blueprint,
+      { id: string; body: CreateBlueprintBody }
+    >({
+      query: ({ id, body }) => ({
+        url: `/update/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Blueprint"],
+    }),
   }),
 });
 
@@ -57,4 +64,5 @@ export const {
   useGetBlueprintsQuery,
   useCreateBlueprintMutation,
   useDeleteBlueprintMutation,
+  useUpdateBlueprintMutation,
 } = blueprintApi;

@@ -17,7 +17,9 @@ interface Section {
 }
 
 interface FormStore {
+  title: string;
   sections: Section[];
+  setTitle: (title: Title) => void;
   setSections: (sections: Section[]) => void;
   addSection: () => void;
   removeSection: (sectionId: number) => void;
@@ -33,6 +35,7 @@ interface FormStore {
 }
 
 export const useFormStore = create<FormStore>((set) => ({
+  title: "",
   sections: [
     {
       id: 1,
@@ -50,9 +53,8 @@ export const useFormStore = create<FormStore>((set) => ({
       ],
     },
   ],
-
+  setTitle: (title) => set({ title }),
   setSections: (sections) => set({ sections }),
-
   addSection: () =>
     set((state) => ({
       sections: [
@@ -117,6 +119,7 @@ export const useFormStore = create<FormStore>((set) => ({
     })),
   resetForm: () =>
     set(() => ({
+      title: "",
       sections: [
         {
           id: 1,
