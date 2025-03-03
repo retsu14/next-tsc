@@ -19,7 +19,7 @@ interface Section {
 interface FormStore {
   title: string;
   sections: Section[];
-  setTitle: (title: Title) => void;
+  setTitle: (title: string) => void;
   setSections: (sections: Section[]) => void;
   addSection: () => void;
   removeSection: (sectionId: number) => void;

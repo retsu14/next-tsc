@@ -1,3 +1,9 @@
+import Title from "@/components/title";
+
 export default function Dashboard() {
-  return <div>Elieser</div>;
+  return (
+    <div>
+      <Title title="Dashboard" />
+    </div>
+  );
 }

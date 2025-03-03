@@ -41,7 +41,7 @@ const FormBuilder: React.FC<CreateBlueprintProps> = ({ mode, initialData }) => {
       setTitle(initialData.title);
       setSections(initialData.data.sections);
     }
-  }, [mode, initialData, setSections]);
+  }, [mode, initialData, setSections, setTitle]);
 
   const handleSubmit = async () => {
     const formData = {

@@ -8,6 +8,7 @@ interface Blueprint {
   flag: boolean;
   createdAt?: string;
   updatedAt?: string;
+  message: string;
   __v: number;
 }
 

@@ -1,6 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Edit, Delete } from "@/public/icons/icons";
-import { useDeleteBlueprintMutation } from "@/app/services/blueprint/blueprint-slice";
+import { useDeleteBlockMutation } from "@/app/services/block/block-slice";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -39,7 +39,15 @@ const columns = (onEdit) => [
     size: 0,
   },
   {
-    accessorKey: "title",
+    accessorKey: "image",
+    header: "Thumbnail",
+    cell: (props) => <div>{props.getValue()}</div>,
+    isResizable: true,
+    enableSorting: true,
+    size: 700,
+  },
+  {
+    accessorKey: "name",
     header: "Name",
     cell: (props) => <div>{props.getValue()}</div>,
     isResizable: true,
@@ -67,13 +75,13 @@ const columns = (onEdit) => [
     accessorKey: "actions",
     header: "Actions",
     cell: (props) => {
-      const [deleteBlueprint, { isLoading }] = useDeleteBlueprintMutation();
-      const blueprintId = props.row.original._id;
+      const [deleteBlock, { isLoading }] = useDeleteBlockMutation();
+      const blockId = props.row.original._id;
       const { toast } = useToast();
 
       const handleDelete = async () => {
         try {
-          const res = await deleteBlueprint(blueprintId).unwrap();
+          const res = await deleteBlock(blockId).unwrap();
 
           if (res) {
             toast({
