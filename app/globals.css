@@ -1,17 +1,14 @@
 @font-face {
-  font-family: Lobster-Regular;
-  src: url("../font/Lobster-Regular.woff2");
+  font-family: "Poppins-Medium";
+  src: url("../font/Poppins-Medium.woff2") format("woff2");
 }
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-.lobster-font {
-  font-family: Lobster-Regular;
+* {
+  font-family: Poppins-Medium;
 }
 
 @layer base {
