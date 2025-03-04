@@ -9,6 +9,7 @@ interface CreateBlockBody {
   name: string;
   component: string;
   blueprint: string;
+  image: string | undefined;
   site: string;
 }
 

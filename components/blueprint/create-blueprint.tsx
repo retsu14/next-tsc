@@ -65,7 +65,7 @@ const FormBuilder: React.FC<CreateBlueprintProps> = ({ mode, initialData }) => {
           id: initialData._id,
           body: formData,
         }).unwrap();
-        console.log("res", res);
+        
         if (res) {
           toast({
             title: "Success",

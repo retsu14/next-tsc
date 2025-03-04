@@ -1,8 +1,16 @@
-import { FormEvent } from "react";
+import { FormEvent, useEffect } from "react";
 import { Button } from "../ui/button";
 import { z } from "zod";
+import { useStore } from "@/store/block-store";
+import {
+  useCreateBlockMutation,
+  useUpdateBlockMutation,
+} from "@/app/services/block/block-slice";
+import { useGetBlueprintsQuery } from "@/app/services/blueprint/blueprint-slice";
+import { useGetSitesQuery } from "@/app/services/sites/sites-slice";
+import { useToast } from "@/hooks/use-toast";
 
-const siteSchema = z.object({
+const blockSchema = z.object({
   name: z.string().min(1, "Name is required"),
   component: z.string().min(1, "Component is required"),
   blueprint: z.string().min(1, "Blueprint is required"),
@@ -15,15 +23,111 @@ interface CreateBlockProps {
     _id: string;
     name: string;
     component: string;
-    blueprint: string;
+    blueprint: {
+      _id: string;
+      title: string;
+    };
     image: string;
-    site: string;
+    site: {
+      _id: string;
+      name: string;
+    };
   };
 }
 
 const CreateBlock: React.FC<CreateBlockProps> = ({ mode, initialData }) => {
+  const {
+    name,
+    component,
+    blueprint,
+    image,
+    site,
+    errors,
+    setField,
+    setErrors,
+    clearError,
+    resetForm,
+  } = useStore();
+  const [createBlock, { isLoading: isCreating }] = useCreateBlockMutation();
+  const [updateBlock, { isLoading: isUpdating }] = useUpdateBlockMutation();
+  const { data: blueprints } = useGetBlueprintsQuery();
+  const { data: sites } = useGetSitesQuery();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (mode === "update" && initialData) {
+      setField("name", initialData.name);
+      setField("component", initialData.component);
+      setField("blueprint", initialData.blueprint._id);
+      setField("image", initialData.image);
+      setField("site", initialData.site._id);
+    }
+  }, [mode, initialData, setField]);
+
+  console.log("initialData", initialData);
+
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setField(name, value);
+    clearError(name);
+  };
+
   const handleSubmit = async (e: FormEvent) => {
-    e.prevetDefault();
+    e.preventDefault();
+
+    const formData = { name, component, blueprint, image, site };
+    const validation = blockSchema.safeParse(formData);
+
+    if (!validation.success) {
+      const newErrors = validation.error.errors.reduce((acc, err) => {
+        const key = err.path[0] as keyof typeof acc;
+        acc[key] = err.message;
+        return acc;
+      }, {} as { name?: string; component?: string; blueprint?: string; site?: string });
+
+      setErrors(newErrors);
+      return;
+    }
+
+    try {
+      if (mode === "create") {
+        await createBlock(formData)
+          .unwrap()
+          .then((res) => {
+            if (res) {
+              toast({
+                title: "Success",
+                description: res.message,
+                variant: "success",
+              });
+            }
+          });
+        resetForm();
+      } else if (mode === "update" && initialData) {
+        await updateBlock({ id: initialData._id, body: formData })
+          .unwrap()
+          .then((res) => {
+            if (res) {
+              toast({
+                title: "Success",
+                description: res.message,
+                variant: "success",
+              });
+            }
+          });
+      }
+    } catch (error: any) {
+      if (error.response) {
+        toast({
+          title: error.response.data.message,
+          variant: "destructive",
+        });
+      } else {
+        console.log("Error:", error.message);
+      }
+    }
   };
 
   return (
@@ -49,34 +153,77 @@ const CreateBlock: React.FC<CreateBlockProps> = ({ mode, initialData }) => {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Domain<span className="text-red-500">*</span>
+          Component<span className="text-red-500">*</span>
         </label>
         <input
           type="text"
           className="w-full px-3 py-2 border text-sm border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          name="domain"
-          value={domain}
+          name="component"
+          value={component}
           onChange={onChange}
         />
-        {errors.domain && (
-          <p className="text-red-500 text-xs mt-1">{errors.domain}</p>
+        {errors.component && (
+          <p className="text-red-500 text-xs mt-1">{errors.component}</p>
         )}
       </div>
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Hook
+          Blueprint<span className="text-red-500">*</span>
+        </label>
+        <select
+          className="bg-white w-full px-3 py-2 border text-sm border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          name="blueprint"
+          value={blueprint}
+          onChange={onChange}
+        >
+          <option value="">Select a blueprint</option>
+          {blueprints?.map((item) => (
+            <option key={item._id} value={item._id}>
+              {item.title}
+            </option>
+          ))}
+        </select>
+        {errors.blueprint && (
+          <p className="text-red-500 text-xs mt-1">{errors.blueprint}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Image
         </label>
         <input
           type="text"
           className="w-full px-3 py-2 border text-sm border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          name="hook"
-          value={hook}
+          name="image"
+          value={image}
           onChange={onChange}
         />
-        {errors.hook && (
-          <p className="text-red-500 text-xs mt-1">{errors.hook}</p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Site<span className="text-red-500">*</span>
+        </label>
+        <select
+          className="bg-white w-full px-3 py-2 border text-sm border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          name="site"
+          value={site}
+          onChange={onChange}
+        >
+          <option value="">Select a site</option>
+          {sites?.map((item) => (
+            <option key={item._id} value={item._id}>
+              {item.name}
+            </option>
+          ))}
+        </select>
+        {errors.site && (
+          <p className="text-red-500 text-xs mt-1">{errors.site}</p>
         )}
       </div>
+
       <Button
         type="submit"
         className="bg-blue-500 hover:bg-blue-400"
