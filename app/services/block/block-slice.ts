@@ -5,14 +5,6 @@ interface Block {
   block: object;
 }
 
-interface CreateBlockBody {
-  name: string;
-  component: string;
-  blueprint: string;
-  image: string | undefined;
-  site: string;
-}
-
 export const blockApi = createApi({
   reducerPath: "blockApi",
   baseQuery: fetchBaseQuery({
@@ -26,7 +18,7 @@ export const blockApi = createApi({
       providesTags: ["Block"],
     }),
 
-    createBlock: builder.mutation<Block, CreateBlockBody>({
+    createBlock: builder.mutation<Block, FormData>({
       query: (body) => ({
         url: "/create",
         method: "POST",
@@ -43,16 +35,14 @@ export const blockApi = createApi({
       invalidatesTags: ["Block"],
     }),
 
-    updateBlock: builder.mutation<Block, { id: string; body: CreateBlockBody }>(
-      {
-        query: ({ id, body }) => ({
-          url: `/update/${id}`,
-          method: "PUT",
-          body,
-        }),
-        invalidatesTags: ["Block"],
-      }
-    ),
+    updateBlock: builder.mutation<Block, { id: string; body: FormData }>({
+      query: ({ id, body }) => ({
+        url: `/update/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Block"],
+    }),
   }),
 });
 

@@ -1,4 +1,4 @@
-import { FormEvent, useEffect } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { z } from "zod";
 import { useStore } from "@/store/block-store";
@@ -9,6 +9,8 @@ import {
 import { useGetBlueprintsQuery } from "@/app/services/blueprint/blueprint-slice";
 import { useGetSitesQuery } from "@/app/services/sites/sites-slice";
 import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
+import { Close } from "@/public/icons/icons";
 
 const blockSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -53,6 +55,7 @@ const CreateBlock: React.FC<CreateBlockProps> = ({ mode, initialData }) => {
   const { data: blueprints } = useGetBlueprintsQuery();
   const { data: sites } = useGetSitesQuery();
   const { toast } = useToast();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (mode === "update" && initialData) {
@@ -61,24 +64,48 @@ const CreateBlock: React.FC<CreateBlockProps> = ({ mode, initialData }) => {
       setField("blueprint", initialData.blueprint._id);
       setField("image", initialData.image);
       setField("site", initialData.site._id);
+      setImagePreview(initialData.image);
     }
   }, [mode, initialData, setField]);
-
-  console.log("initialData", initialData);
 
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
-    setField(name, value);
+    const { name, value, files } = e.target as HTMLInputElement;
+    if (name === "image" && files) {
+      setField(name, files[0]);
+      setImagePreview(URL.createObjectURL(files[0]));
+    } else {
+      setField(name, value);
+    }
     clearError(name);
+  };
+
+  const removeImage = () => {
+    setField("image", null);
+    setImagePreview(null);
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    const formData = { name, component, blueprint, image, site };
-    const validation = blockSchema.safeParse(formData);
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("component", component);
+    formData.append("blueprint", blueprint);
+    formData.append("site", site);
+    if (image) {
+      formData.append("image", image);
+    }
+
+    const validation = blockSchema.safeParse({
+      name,
+      component,
+      blueprint,
+      site,
+    });
+
+    console.log("blueprint", blueprint);
 
     if (!validation.success) {
       const newErrors = validation.error.errors.reduce((acc, err) => {
@@ -105,6 +132,7 @@ const CreateBlock: React.FC<CreateBlockProps> = ({ mode, initialData }) => {
             }
           });
         resetForm();
+        setImagePreview(null);
       } else if (mode === "update" && initialData) {
         await updateBlock({ id: initialData._id, body: formData })
           .unwrap()
@@ -126,6 +154,11 @@ const CreateBlock: React.FC<CreateBlockProps> = ({ mode, initialData }) => {
         });
       } else {
         console.log("Error:", error.message);
+        toast({
+          title: "An error occurred",
+          description: error.message,
+          variant: "destructive",
+        });
       }
     }
   };
@@ -194,12 +227,29 @@ const CreateBlock: React.FC<CreateBlockProps> = ({ mode, initialData }) => {
           Image
         </label>
         <input
-          type="text"
+          type="file"
           className="w-full px-3 py-2 border text-sm border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           name="image"
-          value={image}
           onChange={onChange}
         />
+        {imagePreview && (
+          <div className="mt-2 relative">
+            <Image
+              src={imagePreview}
+              width={100}
+              height={100}
+              alt="Preview"
+              className=" rounded-md"
+            />
+            <button
+              type="button"
+              className="absolute top-[-13px] left-[100px] z-10 mt-2 text-red-500 hover:text-red-700"
+              onClick={removeImage}
+            >
+              <Close className="w-7 h-7" />
+            </button>
+          </div>
+        )}
       </div>
 
       <div>

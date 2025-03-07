@@ -13,6 +13,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
 
 const columns = (onEdit) => [
   {
@@ -41,10 +42,18 @@ const columns = (onEdit) => [
   {
     accessorKey: "image",
     header: "Thumbnail",
-    cell: (props) => <div>{props.getValue()}</div>,
+    cell: (props) => (
+      <Image
+        src={props.getValue()}
+        width={60}
+        height={60}
+        alt="Thumbnail"
+        className="rounded-full"
+      />
+    ),
     isResizable: true,
     enableSorting: true,
-    size: 700,
+    size: 0,
   },
   {
     accessorKey: "name",

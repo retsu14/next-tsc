@@ -58,14 +58,17 @@ const Table: React.FC<Props> = ({ columns, data, onEdit }) => {
 
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-200">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium -500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                    style={{
+                      width: header.getSize(),
+                    }}
                   >
                     <div className="flex items-center gap-2">
                       {header.isPlaceholder
