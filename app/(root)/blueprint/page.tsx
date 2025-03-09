@@ -7,15 +7,21 @@ import CreateBlueprint from "@/components/blueprint/create-blueprint";
 import columns from "@/lib/tables/blueprint-table";
 import Table from "@/components/table";
 import { useGetBlueprintsQuery } from "@/app/services/blueprint/blueprint-slice";
+import { useFormStore } from "@/store/form-store";
 
 export default function BlueprintPage() {
   const { data: blueprints } = useGetBlueprintsQuery();
   const [showForm, setShowForm] = useState(false);
-  const [editBlueprint, setEditBlueprint] = useState(null);
+  const [editBlueprint, setEditBlueprint] = useState<any | undefined>(
+    undefined
+  );
+  const { resetForm } = useFormStore((state) => state);
 
   const toggleForm = () => {
     setShowForm(!showForm);
     setEditBlueprint(null);
+
+    if (showForm) resetForm();
   };
 
   const handleEdit = (blueprint: any) => {

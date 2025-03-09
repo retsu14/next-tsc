@@ -68,6 +68,8 @@ const CreateBlock: React.FC<CreateBlockProps> = ({ mode, initialData }) => {
     }
   }, [mode, initialData, setField]);
 
+  console.log("initialData", initialData?.site._id);
+
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {

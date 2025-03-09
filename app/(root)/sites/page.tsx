@@ -7,18 +7,28 @@ import CreateSites from "@/components/sites/create-sites";
 import columns from "@/lib/tables/sites-table";
 import Table from "@/components/table";
 import { useGetSitesQuery } from "@/app/services/sites/sites-slice";
+import { useStore } from "@/store/sites-form";
 
 export default function Blueprint() {
   const { data: sites } = useGetSitesQuery();
   const [showForm, setShowForm] = useState(false);
-  const [editSite, setEditSite] = useState(null);
+  const [editSite, setEditSite] = useState<null | any>(null);
+  const { resetForm } = useStore((state) => state);
 
   const toggleForm = () => {
     setShowForm(!showForm);
     setEditSite(null);
+    if (showForm) resetForm();
   };
 
-  const handleEdit = (site) => {
+  interface Site {
+    id: string;
+    name: string;
+    domain: string;
+    hook: string;
+  }
+
+  const handleEdit = (site: Site) => {
     setEditSite(site);
     setShowForm(true);
   };

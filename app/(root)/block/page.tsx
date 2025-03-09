@@ -7,21 +7,29 @@ import Table from "@/components/table";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CreateBlock from "@/components/block/create-block";
+import { useStore } from "@/store/block-store";
 
 const Block = () => {
   const { data: blocks } = useGetBlocksQuery();
   const [showForm, setShowForm] = useState(false);
-  const [editBlueprint, setEditBlueprint] = useState(null);
+  const [editBlueprint, setEditBlueprint] = useState<any | undefined>(
+    undefined
+  );
+  const resetForm = useStore((state) => state.resetForm);
 
   const toggleForm = () => {
     setShowForm(!showForm);
     setEditBlueprint(null);
+    if (showForm) {
+      resetForm();
+    }
   };
 
   const handleEdit = (blueprint: any) => {
     setEditBlueprint(blueprint);
     setShowForm(true);
   };
+
   return (
     <div className="w-full">
       <div className="flex justify-between items-center">
