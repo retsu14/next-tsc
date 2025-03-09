@@ -84,7 +84,7 @@ const CreateBlock: React.FC<CreateBlockProps> = ({ mode, initialData }) => {
   };
 
   const removeImage = () => {
-    setField("image", null);
+    setField("image", "");
     setImagePreview(null);
   };
 
