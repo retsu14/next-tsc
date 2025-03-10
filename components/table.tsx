@@ -48,7 +48,7 @@ const Table: React.FC<Props> = ({ columns, data, onEdit }) => {
           </div>
           <input
             type="text"
-            placeholder="Search blueprints..."
+            placeholder="Search..."
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
             className="bg-gray-50 border border-gray-300 -900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
